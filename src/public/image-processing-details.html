@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing Details</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Processing Details</h1>
+    <div id="details-container"></div>
+
+    <script>
+        async function fetchDetails() {
+            try {
+                const response = await fetch('/image-processing/details', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'include',
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                displayDetails(data);
+            } catch (error) {
+                console.error('Error fetching details:', error);
+                document.getElementById('details-container').innerHTML = 'Error fetching details. Please try again later.';
+            }
+        }
+
+        function displayDetails(details) {
+            const container = document.getElementById('details-container');
+            if (details.length === 0) {
+                container.innerHTML = 'No details available.';
+                return;
+            }
+
+            const table = document.createElement('table');
+            const headers = Object.keys(details[0]);
+
+            // Create table header
+            const headerRow = table.insertRow();
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+
+            // Create table rows
+            details.forEach(detail => {
+                const row = table.insertRow();
+                headers.forEach(header => {
+                    const cell = row.insertCell();
+                    cell.textContent = detail[header];
+                });
+            });
+
+            container.appendChild(table);
+        }
+
+        // Fetch details when the page loads
+        fetchDetails();
+    </script>
+</body>
+</html>
